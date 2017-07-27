@@ -40,7 +40,7 @@
  */
 
 #include "ork/taskgraph/TaskGraph.h"
-
+#include <algorithm>
 using namespace std;
 
 namespace ork
@@ -288,7 +288,7 @@ void TaskGraph::taskStateChanged(ptr<Task> t, bool done, reason r)
 
 void TaskGraph::completionDateChanged(ptr<Task> t, unsigned int date)
 {
-    completionDate = max(completionDate, date);
+    completionDate = std::max(completionDate, date);
     TaskIterator i = getInverseDependencies(t);
     if (i.hasNext()) {
         // if t has successors,

@@ -1,37 +1,28 @@
 set(LIBNAME "ork")
+add_definitions(-DPTW32_STATIC_LIB)
 
 # Sources
-include_directories("${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/libraries" "${PROJECT_SOURCE_DIR}/libraries/*")
-file(GLOB SOURCE_FILES *.cpp */*.cpp)
+include_directories("${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/pthreads" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/libraries" "${PROJECT_SOURCE_DIR}/libraries/*")
+file(GLOB SOURCE_FILES *.cpp */*.cpp */*.h pthreads/pthread.c)
 
 # Libraries
-set(LIBS GL GLU GLEW glut pthread stb_image tinyxml)
-if(UNIX)
-	set(LIBS ${LIBS} rt)
-endif(UNIX)
+set(LIBS OpenGL::GL OpenGL::GLU GLEW::GLEW glfw)
 
-#message(STATUS "Using libs: " ${LIBS})
-#message(STATUS "GLFW needs: " ${GLFW_STATIC_LIBRARIES})
-# Static or shared?
-set(LIBTYPE STATIC)
-set(GLFWLIBS ${GLFW_STATIC_LIBRARIES})
-if(BUILD_SHARED)
-	set(LIBTYPE SHARED)
-    set(GLFWLIBS glfw3)
-endif(BUILD_SHARED)
-set(LIBS ${LIBS} ${GLFWLIBS})
-message(STATUS "GLFW libs for " ${LIBTYPE} " library: " ${GLFWLIBS})
+if(BUILD_SHARED_LIBS AND MSVC)
+	add_definitions("-DORK_API=__declspec(dllexport)")
+else(BUILD_SHARED_LIBS AND MSVC)
+	add_definitions(-DORK_API=)
+endif(BUILD_SHARED_LIBS AND MSVC)
 
-# Create a static library
-add_library(${LIBNAME} ${LIBTYPE} ${SOURCE_FILES})
+# Create Libs
+add_library(${LIBNAME} ${SOURCE_FILES})
 target_link_libraries(${LIBNAME} ${LIBS})
 
-# Adds SO Version and subversion. To be added to ensure ABI/API compatibility.
-#SET_TARGET_PROPERTIES(${LIBNAME} PROPERTIES SOVERSION ${ORK_VERSION_MAJOR} VERSION ${ORK_VERSION})
-
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+if(BUILD_SHARED_LIBS AND MSVC)
+	target_compile_definitions(ork INTERFACE "-DORK_API=__declspec(dllimport)")
+else(BUILD_SHARED_LIBS AND MSVC)
+	target_compile_definitions(ork INTERFACE -DORK_API=)
+endif(BUILD_SHARED_LIBS AND MSVC)
 
 # Install headers
 FOREACH(subdir core math render resource scenegraph taskgraph ui util)
@@ -39,11 +30,18 @@ FOREACH(subdir core math render resource scenegraph taskgraph ui util)
   INSTALL(FILES ${include-files} DESTINATION include/ork/${subdir})
 ENDFOREACH(subdir)
 
+INSTALL(FILES tinyxml/tinyxml.h DESTINATION include/ork/resource/tinyxml)
+INSTALL(FILES stbi/stb_image.h DESTINATION include/ork/resource/stbi)
+INSTALL(FILES pthreads/pthread.h DESTINATION include/ork)
+
 # Install library
-INSTALL(TARGETS ork LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
+INSTALL(TARGETS ork EXPORT ork-targets 
+	LIBRARY DESTINATION lib 
+	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin)
 
 message(STATUS "Setting ork cflags for installation package")
-SET(ORK_CFLAGS "-DORK_API= -DTIXML_USE_STL" )
+
 if(USE_SHARED_PTR)
 	message(STATUS "Setting shared ptr usage to final package")
 	set(ORK_CFLAGS ${ORK_CFLAGS} "-DUSE_SHARED_PTR")
@@ -55,5 +53,3 @@ endif(USE_FREEGLUT)
 
 message(STATUS "ork cflags: " ${ORK_CFLAGS})
 
-CONFIGURE_FILE(ork.pc.in ${PROJECT_BINARY_DIR}/ork.pc @ONLY)
-INSTALL(FILES ${PROJECT_BINARY_DIR}/ork.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)

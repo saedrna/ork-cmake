@@ -40,7 +40,7 @@
  */
 
 #include "ork/core/FileLogger.h"
-
+#include <algorithm>
 #include <ctime>
 
 #include <pthread.h>
@@ -74,7 +74,7 @@ FileLogger::File::File(const string &name) : prev(0), cur(0)
 
 bool FileLogger::File::repetition()
 {
-    unsigned int n = min((unsigned int) BUFFER_SIZE, (unsigned int) (cur - prev));
+    unsigned int n = std::min((unsigned int) BUFFER_SIZE, (unsigned int) (cur - prev));
     stream.seekg(prev, ios::beg);
     stream.read(prevBuf, n);
     stream.seekg(cur, ios::beg);
