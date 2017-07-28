@@ -18,27 +18,19 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 # Common deps
-find_package(glew) # GLEW::GLEW 
-find_package(glfw3) # glfw
-find_package(glut)
-find_package(OpenGL)
+find_package(glew REQUIRED) # GLEW::GLEW 
+find_package(glfw3 REQUIRED) # glfw
+find_package(glut REQUIRED) #GLUT::GLUT
+find_package(OpenGL REQUIRED) # OpenGL:GL OpenGL:GLU
+set(ORK_3RDPARTY_LIBRARIES OpenGL::GL OpenGL::GLU GLEW::GLEW glfw GLUT::GLUT)
 
-option(BUILD_SHARED      "Build shared library instead of static"   OFF)
-option(BUILD_EXAMPLES    "Build examples"                           ON )
-option(BUILD_TESTS       "Build tests"                              ON )
-option(USE_SHARED_PTR	 "Use std::shared_ptr"			    ON )
-option(USE_FREEGLUT	 "Use freeglut"				    ON )
+option(BUILD_SHARED       "Build shared library instead of static"   OFF)
+option(BUILD_EXAMPLES     "Build examples"                           ON )
+option(BUILD_TESTS        "Build tests"                              ON )
+option(USE_SHARED_PTR     "Use std::shared_ptr"			    ON )
+option(USE_FREEGLUT       "Use freeglut"				    ON )
 
 set(CMAKE_DEBUG_POSTFIX "-gd")
-
-if(USE_SHARED_PTR)
-	add_definitions("-DUSE_SHARED_PTR") 
-endif(USE_SHARED_PTR)
-if(USE_FREEGLUT)
-	add_definitions("-DUSEFREEGLUT")
-endif(USE_FREEGLUT)
-
-add_definitions(-DTIXML_USE_STL)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/ork)
 # Sub dirs
@@ -71,16 +63,10 @@ set(namespace "${PROJECT_NAME}::")
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
-# Configure '<PROJECT-NAME>ConfigVersion.cmake'
-# Note: PROJECT_VERSION is used as a VERSION
 write_basic_package_version_file(
     "${version_config}" COMPATIBILITY SameMajorVersion VERSION ${ORK_VERSION}
 )
 
-# Configure '<PROJECT-NAME>Config.cmake'
-# Use variables:
-#   * targets_export_name
-#   * PROJECT_NAME
 configure_package_config_file(
     "Config.cmake.in"
     "${project_config}"
