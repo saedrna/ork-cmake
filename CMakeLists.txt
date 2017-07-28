@@ -49,16 +49,16 @@ endif(BUILD_TESTS)
 #   * <prefix>/lib/cmake/<PROJECT-NAME>
 #   * <prefix>/lib/
 #   * <prefix>/include/
-set(config_install_dir "cmake/${PROJECT_NAME}")
+set(config_install_dir "cmake/ork")
 set(include_install_dir "include")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 # Configuration
-set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
-set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-set(targets_export_name "${PROJECT_NAME}Targets")
-set(namespace "${PROJECT_NAME}::")
+set(version_config "${generated_dir}/ork-config-version.cmake")
+set(project_config "${generated_dir}/ork-config.cmake")
+set(targets_export_name "ork-targets")
+set(namespace "ork::")
 
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
@@ -68,7 +68,7 @@ write_basic_package_version_file(
 )
 
 configure_package_config_file(
-    "Config.cmake.in"
+    "config.cmake.in"
     "${project_config}"
     INSTALL_DESTINATION "${config_install_dir}"
 )
@@ -80,5 +80,5 @@ install(
 
 install(EXPORT ork-targets 
 	    NAMESPACE ork::
-		DESTINATION cmake/${PROJECT_NAME})
+		DESTINATION cmake/ork)
 

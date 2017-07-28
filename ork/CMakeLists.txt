@@ -28,7 +28,12 @@ if(USE_FREEGLUT)
 	target_compile_definitions(ork PUBLIC -DUSEFREEGLUT)
 endif(USE_FREEGLUT)
 target_compile_definitions(ork PUBLIC -DTIXML_USE_STL)
-set_target_properties(ork PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
+
+target_include_directories(ork INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>  # <prefix>/include/mylib
+)
+
 # Install headers
 FOREACH(subdir core math render resource scenegraph taskgraph ui util)
   FILE(GLOB include-files ${subdir}/*.h)
