@@ -3,22 +3,17 @@ add_definitions(-DPTW32_STATIC_LIB)
 
 # Sources
 include_directories("${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/pthreads" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/libraries" "${PROJECT_SOURCE_DIR}/libraries/*")
-file(GLOB SOURCE_FILES *.cpp */*.cpp */*.h pthreads/pthread.c)
-
-if(BUILD_SHARED_LIBS AND MSVC)
-	add_definitions("-DORK_API=__declspec(dllexport)")
-else(BUILD_SHARED_LIBS AND MSVC)
-	add_definitions(-DORK_API=)
-endif(BUILD_SHARED_LIBS AND MSVC)
+file(GLOB SOURCE_FILES *.cpp */*.cpp */*.h )
 
 # Create Libs
 add_library(ork ${SOURCE_FILES})
 target_link_libraries(ork ${ORK_3RDPARTY_LIBRARIES})
 
 if(BUILD_SHARED_LIBS AND MSVC)
-	target_compile_definitions(ork INTERFACE "-DORK_API=__declspec(dllimport)")
+	target_compile_definitions(ork INTERFACE "-DORK_API=__declspec(dllimport)"
+								   PRIVATE "-DORK_API=__declspec(dllexport)")
 else(BUILD_SHARED_LIBS AND MSVC)
-	target_compile_definitions(ork INTERFACE -DORK_API=)
+	target_compile_definitions(ork PUBLIC -DORK_API=)
 endif(BUILD_SHARED_LIBS AND MSVC)
 
 if(USE_SHARED_PTR)
@@ -42,7 +37,6 @@ ENDFOREACH(subdir)
 
 INSTALL(FILES tinyxml/tinyxml.h DESTINATION include/ork/resource/tinyxml)
 INSTALL(FILES stbi/stb_image.h DESTINATION include/ork/resource/stbi)
-INSTALL(FILES pthreads/pthread.h DESTINATION include/ork)
 
 # Install library
 INSTALL(TARGETS ork EXPORT ork-targets 

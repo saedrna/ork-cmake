@@ -22,9 +22,19 @@ find_package(glew REQUIRED) # GLEW::GLEW
 find_package(glfw3 REQUIRED) # glfw
 find_package(glut REQUIRED) #GLUT::GLUT
 find_package(OpenGL REQUIRED) # OpenGL:GL OpenGL:GLU
-set(ORK_3RDPARTY_LIBRARIES OpenGL::GL OpenGL::GLU GLEW::GLEW glfw GLUT::GLUT)
+if(MSVC)
+	find_package(pthread REQUIRED) # pthread::pthread
+endif(MSVC)
 
-option(BUILD_SHARED       "Build shared library instead of static"   OFF)
+set(ORK_3RDPARTY_LIBRARIES OpenGL::GL OpenGL::GLU GLEW::GLEW glfw GLUT::GLUT)
+if(MSVC)
+	list(APPEND ORK_3RDPARTY_LIBRARIES pthread::pthread)
+else()
+	list(APPEND ORK_3RDPARTY_LIBRARIES pthread)
+endif(MSVC)
+
+
+option(BUILD_SHARED_LIBS  "Build shared library instead of static"   OFF)
 option(BUILD_EXAMPLES     "Build examples"                           ON )
 option(BUILD_TESTS        "Build tests"                              ON )
 option(USE_SHARED_PTR     "Use std::shared_ptr"			    ON )
@@ -32,7 +42,10 @@ option(USE_FREEGLUT       "Use freeglut"				    ON )
 
 set(CMAKE_DEBUG_POSTFIX "-gd")
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/ork)
+if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+endif(MSVC)
+
 # Sub dirs
 add_subdirectory(libraries)
 add_subdirectory(ork)
