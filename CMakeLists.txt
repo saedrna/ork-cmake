@@ -2,6 +2,8 @@ project(Ork CXX C)
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(VERSION 2.6)
 
+set(CMAKE_CXX_STANDARD 11)
+
 SET(ORK_VERSION_MAJOR 3)
 SET(ORK_VERSION_MINOR 2)
 SET(ORK_VERSION "${ORK_VERSION_MAJOR}.${ORK_VERSION_MINOR}")
@@ -34,15 +36,14 @@ else()
 endif(MSVC)
 
 
-option(BUILD_SHARED_LIBS  "Build shared library instead of static"   OFF)
-option(BUILD_EXAMPLES     "Build examples"                           ON )
-option(BUILD_TESTS        "Build tests"                              ON )
+option(BUILD_SHARED_LIBS  "Build shared library instead of static"   ON)
+option(BUILD_EXAMPLES     "Build examples"                           OFF )
+option(BUILD_TESTS        "Build tests"                              OFF )
 option(USE_SHARED_PTR     "Use std::shared_ptr"			    ON )
 option(USE_FREEGLUT       "Use freeglut"				    ON )
 
-set(CMAKE_DEBUG_POSTFIX "-gd")
-
 if(MSVC)
+	set(CMAKE_DEBUG_POSTFIX "-gd")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
 endif(MSVC)
 

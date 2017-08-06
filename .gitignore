@@ -5,3 +5,5 @@
 # Ignore library output directory
 /lib/
 
+
+\.vscode/

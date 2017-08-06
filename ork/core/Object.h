@@ -50,8 +50,8 @@
 #include <memory>
 #define TR1 std
 #else
-#include <tr1/memory>
-#define TR1 std::tr1
+#include <memory>
+#define TR1 std
 #endif
 #else
 #include "ork/core/Atomic.h"

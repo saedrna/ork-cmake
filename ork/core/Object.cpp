@@ -64,7 +64,7 @@ void fseek64(FILE *f, long long offset, int origin)
 #ifdef _MSC_VER
     _fseeki64(f, offset, origin);
 #else
-    fseeko64(f, offset, origin);
+    fseek64(f, offset, origin);
 #endif
 }
 

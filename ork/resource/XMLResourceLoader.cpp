@@ -50,6 +50,7 @@
 #include <time.h>
 #include <windows.h>
 #else
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <sys/unistd.h>
